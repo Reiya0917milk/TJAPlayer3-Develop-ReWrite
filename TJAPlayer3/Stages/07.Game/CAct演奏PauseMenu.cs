@@ -60,66 +60,56 @@ namespace TJAPlayer3
 		//	base.tDeativatePopupMenu();
 		//}
 
+		public void t選択後()
+		{
+			if (this.選択完了)
+			{
+				if (!sw.IsRunning)
+					this.sw = Stopwatch.StartNew();
+				if (sw.ElapsedMilliseconds > 1500)
+				{
+					switch (選択した行)
+					{
+						case (int)EOrder.Continue:
+							TJAPlayer3.stage演奏ドラム画面.bPAUSE = false;
+
+							CSound管理.rc演奏用タイマ.t再開();
+							TJAPlayer3.Timer.t再開();
+							TJAPlayer3.DTX.t全チップの再生再開();
+							TJAPlayer3.stage演奏ドラム画面.actAVI.tPauseControl();
+							break;
+
+						case (int)EOrder.Redoing:
+							TJAPlayer3.stage演奏ドラム画面.bPAUSE = false;
+							TJAPlayer3.stage演奏ドラム画面.t演奏やりなおし();
+							break;
+
+						case (int)EOrder.Return:
+							CSound管理.rc演奏用タイマ.t再開();
+							TJAPlayer3.Timer.t再開();
+							TJAPlayer3.stage演奏ドラム画面.t演奏中止();
+							break;
+						default:
+							break;
+					}
+					this.tDeativatePopupMenu();
+					sw.Stop();
+					sw.Reset();
+					this.選択完了 = false;
+				}
+			}
+		}
 		public override void t進行描画sub()
 		{
-            if( this.bやり直しを選択した )
-            {
-                if( !sw.IsRunning )
-                    this.sw = Stopwatch.StartNew();
-                if( sw.ElapsedMilliseconds > 1500 )
-                {
-                    TJAPlayer3.stage演奏ドラム画面.bPAUSE = false;
-                    TJAPlayer3.stage演奏ドラム画面.t演奏やりなおし();
-
-	    		    this.tDeativatePopupMenu();
-                    this.sw.Reset();
-                }
-            }
 		}
-
-		public override void tEnter押下Main( int nSortOrder )
+		public override void tEnter押下Main(int nSortOrder)
 		{
-            switch ( n現在の選択行 )
-            {
-				case (int) EOrder.Continue:
-                    TJAPlayer3.stage演奏ドラム画面.bPAUSE = false;
-
-                    CSound管理.rc演奏用タイマ.t再開();
-					TJAPlayer3.Timer.t再開();
-					TJAPlayer3.DTX.t全チップの再生再開();
-                    TJAPlayer3.stage演奏ドラム画面.actAVI.tPauseControl();
-					CActSelectPopupMenu.b選択した = true;
-					this.tDeativatePopupMenu();
-					break;
-
-				case (int) EOrder.Redoing:
-					if (TJAPlayer3.stage選曲.n確定された曲の難易度[0] != (int)Difficulty.Dan)
-					{
-						this.bやり直しを選択した = true;
-						CActSelectPopupMenu.b選択した = true;
-					}
-                    else
-					{
-						CSound管理.rc演奏用タイマ.t再開();
-						TJAPlayer3.Timer.t再開();
-						TJAPlayer3.stage演奏ドラム画面.t演奏中止();
-						CActSelectPopupMenu.b選択した = true;
-						this.tDeativatePopupMenu();
-					}
-					break;
-
-				case (int) EOrder.Return:
-                    CSound管理.rc演奏用タイマ.t再開();
-					TJAPlayer3.Timer.t再開();
-                    TJAPlayer3.stage演奏ドラム画面.t演奏中止();
-					CActSelectPopupMenu.b選択した = true;
-					this.tDeativatePopupMenu();
-                    break;
-                default:
-                    break;
-            }
+			if (!this.選択完了)
+			{
+				this.選択した行 = n現在の選択行;
+				this.選択完了 = true;
+			}
 		}
-
 		public override void tCancel()
 		{
 		}
@@ -175,7 +165,9 @@ namespace TJAPlayer3
 		private bool b選択した;
 		private CTexture txパネル本体;
 		private CTexture tx文字列パネル;
-        private Stopwatch sw;
+		private bool 選択完了;
+		private int 選択した行;
+		private Stopwatch sw;
         private bool bやり直しを選択した;
 		//-----------------
 		#endregion

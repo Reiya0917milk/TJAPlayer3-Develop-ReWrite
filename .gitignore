@@ -39,3 +39,5 @@
 /Test/System/OpenSkin
 uniqueID.json
 *.score.ini
+/Test/Songs
+/Test/System
